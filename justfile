@@ -5,6 +5,13 @@ set positional-arguments
 default:
   just --list
 
+# make sure env loads
+env:
+  env
+
+shell:
+  echo $0
+
 # wrap terragrunt with dotenv loading
 tg *args='':
   terragrunt $@

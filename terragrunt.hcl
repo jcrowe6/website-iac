@@ -3,15 +3,15 @@ locals {
   keypair_filename = ".keypair.pem"
 
   # read environment variables
-  aws_region        = get_env("AWS_REGION")
-  repo_origin       = get_env("REPO_ORIGIN")
-  backend_bucket    = get_env("BACKEND_BUCKET")
-  backend_locktable = get_env("BACKEND_LOCKTABLE")
-  backend_region    = get_env("BACKEND_REGION")
+  aws_region        = get_env("AWS_REGION", "us-east-2")
+  repo_origin       = get_env("REPO_ORIGIN", "git://github.com/jcrowe6/website-iac")
+  backend_bucket    = get_env("BACKEND_BUCKET", "mywebsite-tfstate")
+  backend_locktable = get_env("BACKEND_LOCKTABLE", "mywebsite_tf_lockid")
+  backend_region    = get_env("BACKEND_REGION", "us-east-2")
   app_name          = get_env("APP_NAME", "Trilium Notes")
   app               = get_env("APP", "trilium")
   stage             = get_env("STAGE", "production")
-  domain            = get_env("DOMAIN", "trilium.someone.me")
+  domain            = get_env("DOMAIN", "notes.jcrowell.net")
 }
 
 # terragrunt configurations
@@ -20,7 +20,7 @@ terraform {
     commands = ["init"]
     execute = [
       "aws", "s3", "cp",
-      "s3://${local.backend_bucket}/env:/${local.stage}/${local.app}/${local.keypair_filename}", ".",
+      "s3://${local.backend_bucket}/env:/${local.stage}/${local.app}/${local.keypair_filename}", "/home/jcrowell/website-tf-secrets/",
     ]
   }
 
@@ -89,7 +89,7 @@ generate "secrets" {
   contents  = <<EOF
 locals {
   keypair_filename = "${local.keypair_filename}"
-  keypair_path     = "$${path.root}/$${local.keypair_filename}"
+  keypair_path     = "/home/jcrowell/website-tf-secrets/$${local.keypair_filename}"
   secret           = jsondecode(data.aws_secretsmanager_secret_version.main.secret_string)
 }
 

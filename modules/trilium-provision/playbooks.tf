@@ -25,9 +25,10 @@ resource "null_resource" "trilium_installer" {
     ])
   }
 
-  provisioner "local-exec" {
-    command = local.cmd_prepare_local_ssl_cert_files
-  }
+  # Didn't work, manually added files
+  #provisioner "local-exec" {
+  #  command = local.cmd_prepare_local_ssl_cert_files
+  #}
 
   provisioner "local-exec" {
     command = local.cmd_trilium_installer

@@ -1,13 +1,23 @@
 resource "aws_s3_bucket" "backup" {
   bucket        = "s3b-${local.slug}-backup"
   force_destroy = false
+  
 
   tags = merge(local.default_tags, {
     Name = "s3b-${local.slug}-backup"
   })
 }
 
+resource "aws_s3_bucket_ownership_controls" "backup" {
+  bucket = aws_s3_bucket.backup.bucket
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
 resource "aws_s3_bucket_acl" "backup" {
+  depends_on = [aws_s3_bucket_ownership_controls.backup]
+
   bucket = aws_s3_bucket.backup.bucket
   acl    = "private"
 }
